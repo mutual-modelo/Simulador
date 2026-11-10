@@ -1275,11 +1275,11 @@
           <div class="wa-template-selector-bar">
             <label for="sel-version-plantilla">Formato de Plantilla:</label>
             <select id="sel-version-plantilla" class="wa-select-version" onchange="handleTemplateVersionChange(this.value)">
-              <option value="estandar">📱 Estándar Multilínea (Planes con Emojis)</option>
-              <option value="plan_unico">🎯 Plan Único Destacado (Plazo Seleccionado)</option>
+              <option value="estandar">📱 Estándar (Planes con Emojis)</option>
+              <option value="plan_unico">🎯 Plan Único (Plazo Seleccionado)</option>
               <option value="formal">🏛️ Institucional Formal (Con Requisitos)</option>
-              <option value="express">⚡ Campaña / Promo Express (24hs)</option>
-              <option value="personalizada">⭐ Mi Plantilla Personalizada (Local)</option>
+              <option value="express">⚡ Promo Express (24hs)</option>
+              <option value="personalizada">⭐ Mi Formato Guardado</option>
             </select>
           </div>
 
@@ -1382,45 +1382,108 @@
       fedem: {
         name: "FEDEM Provincial",
         short: "FEDEM",
-        plazosValidos: [6, 12, 18, 24, 36, 48],
-        seguroMensual: 0.00500000,
-        parametros: {
-          6:  { tem: 0.04078550, tna: 0.48942604, coefOficial: 1.56999000, gastos: 0.25000000, seguro: 0.00500000 },
-          12: { tem: 0.04473499, tna: 0.53681994, coefOficial: 1.83207000, gastos: 0.25000000, seguro: 0.00500000 },
-          18: { tem: 0.03722183, tna: 0.44666196, coefOficial: 2.24242000, gastos: 0.34000000, seguro: 0.00500000 },
-          24: { tem: 0.04449534, tna: 0.53394403, coefOficial: 2.67773000, gastos: 0.34000000, seguro: 0.00500000 },
-          36: { tem: 0.05121415, tna: 0.61456980, coefOficial: 3.62048000, gastos: 0.34000000, seguro: 0.00500000 },
-          48: { tem: 0.05404419, tna: 0.64853029, coefOficial: 4.63548000, gastos: 0.34000000, seguro: 0.00500000 }
-        }
+        plazosValidos: [6, 12, 18, 24, 36, 48]
       },
-
       muni: {
         name: "Municipales Convenio VIKINGO / QUAD",
         short: "Municipales",
-        plazosValidos: [12, 24],
-        factorVikingo: 0.85000000,
-        gastosVikingo: 0.15000000,
-        tnaQuad: 0.39595562,
-        temQuad: 0.03299630,
-        parametros: {
-          12: { temCft: 0.11767446, coefCuota: 0.15970101, coefTotal: 1.91641215 },
-          24: { temCft: 0.10178244, coefCuota: 0.11279785, coefTotal: 2.70714836 }
-        }
+        plazosValidos: [12, 24]
       },
-
       sidecreer: {
         name: "Tarjeta Sidecreer",
         short: "Sidecreer",
-        plazosValidos: [6, 12, 18, 24, 36, 48],
-        seguroMensual: 0.00000000,
-        parametros: {
-          6:  { tem: 0.04877876, tna: 0.58534514, coefOficial: 1.56999000, gastos: 0.25000000 },
-          12: { tem: 0.05262864, tna: 0.63154362, coefOficial: 1.83207000, gastos: 0.25000000 },
-          18: { tem: 0.04497728, tna: 0.53972734, coefOficial: 2.24242000, gastos: 0.34000000 },
-          24: { tem: 0.05164863, tna: 0.61978356, coefOficial: 2.67773000, gastos: 0.34000000 },
-          36: { tem: 0.05750812, tna: 0.69009744, coefOficial: 3.62048000, gastos: 0.34000000 },
-          48: { tem: 0.05981772, tna: 0.71781259, coefOficial: 4.63548000, gastos: 0.34000000 }
-        }
+        plazosValidos: [6, 12, 18, 24, 36, 48]
+      }
+    };
+    FINANCIAL_DATA.municipales = FINANCIAL_DATA.muni;
+
+    /**
+     * FUNCIÓN DE AMORTIZACIÓN FRANCESA ESTÁNDAR (PMT)
+     */
+    function calcularPMT(tasa, nper, pv) {
+      return pv * (tasa / (1 - Math.pow(1 + tasa, -nper)));
+    }
+
+    /**
+     * MOTOR FINANCIERO OFICIAL DE CÁLCULO DE AYUDAS ECONÓMICAS
+     * Fórmulas y tasas exactas del archivo oficial:
+     * "Simuladores de Ay. Económicas (FEDEM, Municipalidad y Sidecreer) (06 - 11)"
+     */
+    const MOTOR_FINANCIERO = {
+      fedem: {
+        6:  { tna: 0.4894004, tem: 0.0407833700, gastos: 0.25, seguro: 0.005, coef: 1.56999 },
+        12: { tna: 0.5369008, tem: 0.0447417301, gastos: 0.25, seguro: 0.005, coef: 1.83207 },
+        18: { tna: 0.4466999, tem: 0.0372249943, gastos: 0.34, seguro: 0.005, coef: 2.24242 },
+        24: { tna: 0.5339007, tem: 0.0444917266, gastos: 0.34, seguro: 0.005, coef: 2.67773 },
+        36: { tna: 0.6145003, tem: 0.0512083547, gastos: 0.34, seguro: 0.005, coef: 3.62048 },
+        48: { tna: 0.6485001, tem: 0.0540416720, gastos: 0.34, seguro: 0.005, coef: 4.63548 }
+      },
+      sidecreer: {
+        6:  { tna: 0.58534514, tem: 0.0487787617, gastos: 0.25, seguro: 0.0, coef: 1.56999 },
+        12: { tna: 0.63154362, tem: 0.0526286350, gastos: 0.25, seguro: 0.0, coef: 1.83207 },
+        18: { tna: 0.53972734, tem: 0.0449772783, gastos: 0.34, seguro: 0.0, coef: 2.24242 },
+        24: { tna: 0.61978356, tem: 0.0516486300, gastos: 0.34, seguro: 0.0, coef: 2.67773 },
+        36: { tna: 0.69009744, tem: 0.0575081200, gastos: 0.34, seguro: 0.0, coef: 3.62048 },
+        48: { tna: 0.71781259, tem: 0.0598177158, gastos: 0.34, seguro: 0.0, coef: 4.63548 }
+      },
+      municipales: {
+        factorVikingo: 0.8500002833,
+        tnaQuad: 0.3959556151,
+        temQuad: 0.0329963013,
+        12: { coefCuota: 0.15970100, coefTotal: 1.91640000 },
+        24: { coefCuota: 0.11279800, coefTotal: 2.70710000 }
+      },
+
+      calcularFEDEM: function(neto, plazo) {
+        const p = this.fedem[plazo];
+        const capitalBruto = neto / (1 - p.gastos);
+        const cuotaPura = capitalBruto * (p.tem / (1 - Math.pow(1 + p.tem, -plazo)));
+        const seguroMensual = capitalBruto * p.seguro;
+        const cuotaFinal = cuotaPura + seguroMensual;
+        const totalPagar = cuotaFinal * plazo;
+        return {
+          capitalBruto,
+          cuotaPura,
+          seguroMensual,
+          cuotaFinal,
+          totalPagar,
+          gastosAdmin: capitalBruto * p.gastos,
+          interesesFinancieros: totalPagar - capitalBruto - (seguroMensual * plazo)
+        };
+      },
+
+      calcularSidecreer: function(neto, plazo) {
+        const p = this.sidecreer[plazo];
+        const capitalBruto = neto / (1 - p.gastos);
+        const cuotaFinal = capitalBruto * (p.tem / (1 - Math.pow(1 + p.tem, -plazo)));
+        const totalPagar = cuotaFinal * plazo;
+        return {
+          capitalBruto,
+          cuotaPura: cuotaFinal,
+          seguroMensual: 0,
+          cuotaFinal,
+          totalPagar,
+          gastosAdmin: capitalBruto * p.gastos,
+          interesesFinancieros: totalPagar - capitalBruto
+        };
+      },
+
+      calcularMunicipales: function(neto, plazo) {
+        const p = this.municipales[plazo];
+        const cuotaFinal = neto * p.coefCuota;
+        const totalPagar = cuotaFinal * plazo;
+        const capitalVikingo = neto / this.municipales.factorVikingo;
+        const capitalQuad = cuotaFinal * ((1 - Math.pow(1 + this.municipales.temQuad, -plazo)) / this.municipales.temQuad);
+        return {
+          capitalBruto: capitalVikingo,
+          capitalVikingo,
+          capitalQuad,
+          cuotaPura: cuotaFinal,
+          seguroMensual: 0,
+          cuotaFinal,
+          totalPagar,
+          gastosAdmin: capitalVikingo - neto
+        };
       }
     };
 
@@ -1475,12 +1538,10 @@
      * CÁLCULO FINANCIERO CON 8 DECIMALES Y AMORTIZACIÓN FRANCESA REAL
      */
     function calculateSimulation(lineaKey, plazo, modo, montoInput) {
-      const linea = FINANCIAL_DATA[lineaKey];
-      if (!linea.plazosValidos.includes(plazo)) {
+      const plazosValidos = (lineaKey === 'muni' || lineaKey === 'municipales') ? [12, 24] : [6, 12, 18, 24, 36, 48];
+      if (!plazosValidos.includes(plazo)) {
         return null;
       }
-
-      const pConfig = linea.parametros[plazo];
 
       let neto = 0;
       let cuota = 0;
@@ -1489,62 +1550,61 @@
       let capitalQuad = 0;
 
       if (lineaKey === 'fedem') {
-        const tem = pConfig.tem;
-        const gastos = pConfig.gastos;
-        const seguro = pConfig.seguro;
-
+        const p = MOTOR_FINANCIERO.fedem[plazo];
         if (modo === 'neto') {
           neto = montoInput;
-          capital = neto / (1 - gastos);
-          const pmt = tem / (1 - Math.pow(1 + tem, -plazo));
-          const cuotaPura = capital * pmt;
-          const seguroMensual = capital * seguro;
-          cuota = cuotaPura + seguroMensual;
-          totalAyuda = cuota * plazo;
+          const res = MOTOR_FINANCIERO.calcularFEDEM(neto, plazo);
+          capital = res.capitalBruto;
+          cuota = res.cuotaFinal;
+          totalAyuda = res.totalPagar;
         } else {
           cuota = montoInput;
-          const pmt = tem / (1 - Math.pow(1 + tem, -plazo));
-          const factorCuotaBruto = pmt + seguro;
+          const pmtFactor = p.tem / (1 - Math.pow(1 + p.tem, -plazo));
+          const factorCuotaBruto = pmtFactor + p.seguro;
           capital = cuota / factorCuotaBruto;
-          neto = capital * (1 - gastos);
-          totalAyuda = cuota * plazo;
+          neto = capital * (1 - p.gastos);
+          const res = MOTOR_FINANCIERO.calcularFEDEM(neto, plazo);
+          cuota = res.cuotaFinal;
+          totalAyuda = res.totalPagar;
+          capital = res.capitalBruto;
         }
 
-      } else if (lineaKey === 'muni') {
-        const coefCuota = pConfig.coefCuota;
-        const factorVikingo = linea.factorVikingo;
-        const temQuad = linea.temQuad;
-
+      } else if (lineaKey === 'muni' || lineaKey === 'municipales') {
+        const p = MOTOR_FINANCIERO.municipales[plazo];
         if (modo === 'neto') {
           neto = montoInput;
-          cuota = neto * coefCuota;
-          totalAyuda = cuota * plazo;
-          capital = neto / factorVikingo;
-          capitalQuad = cuota * ((1 - Math.pow(1 + temQuad, -plazo)) / temQuad);
+          const res = MOTOR_FINANCIERO.calcularMunicipales(neto, plazo);
+          cuota = res.cuotaFinal;
+          totalAyuda = res.totalPagar;
+          capital = res.capitalBruto;
+          capitalQuad = res.capitalQuad;
         } else {
           cuota = montoInput;
-          neto = cuota / coefCuota;
-          totalAyuda = cuota * plazo;
-          capital = neto / factorVikingo;
-          capitalQuad = cuota * ((1 - Math.pow(1 + temQuad, -plazo)) / temQuad);
+          neto = cuota / p.coefCuota;
+          const res = MOTOR_FINANCIERO.calcularMunicipales(neto, plazo);
+          cuota = res.cuotaFinal;
+          totalAyuda = res.totalPagar;
+          capital = res.capitalBruto;
+          capitalQuad = res.capitalQuad;
         }
 
       } else if (lineaKey === 'sidecreer') {
-        const tem = pConfig.tem;
-        const gastos = pConfig.gastos;
-
+        const p = MOTOR_FINANCIERO.sidecreer[plazo];
         if (modo === 'neto') {
           neto = montoInput;
-          capital = neto / (1 - gastos);
-          const pmt = tem / (1 - Math.pow(1 + tem, -plazo));
-          cuota = capital * pmt;
-          totalAyuda = cuota * plazo;
+          const res = MOTOR_FINANCIERO.calcularSidecreer(neto, plazo);
+          capital = res.capitalBruto;
+          cuota = res.cuotaFinal;
+          totalAyuda = res.totalPagar;
         } else {
           cuota = montoInput;
-          const factorCuotaBruto = tem / (1 - Math.pow(1 + tem, -plazo));
-          capital = cuota / factorCuotaBruto;
-          neto = capital * (1 - gastos);
-          totalAyuda = cuota * plazo;
+          const pmtFactor = p.tem / (1 - Math.pow(1 + p.tem, -plazo));
+          capital = cuota / pmtFactor;
+          neto = capital * (1 - p.gastos);
+          const res = MOTOR_FINANCIERO.calcularSidecreer(neto, plazo);
+          cuota = res.cuotaFinal;
+          totalAyuda = res.totalPagar;
+          capital = res.capitalBruto;
         }
       }
 
