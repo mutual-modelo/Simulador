@@ -1029,13 +1029,6 @@
       </a>
 
       <div class="header-actions">
-        <span class="badge-official">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-            <path d="M20 6L9 17l-5-5"/>
-          </svg>
-          Oficial
-        </span>
-
         <button type="button" class="btn-header" onclick="window.print()" title="Imprimir o guardar como PDF">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="6 9 6 2 18 2 18 9"/>
@@ -1127,7 +1120,7 @@
             </label>
             <div class="currency-input-wrap">
               <span class="currency-prefix">$</span>
-              <input type="text" id="amountInput" class="input-currency" value="100.000" autocomplete="off" inputmode="numeric" oninput="handleAmountInput(this.value)" />
+              <input type="text" id="amountInput" class="input-currency" value="100.000" autocomplete="off" inputmode="decimal" oninput="handleAmountInput(this.value)" />
             </div>
 
             <!-- Accesos Rápidos de Monto -->
@@ -1385,7 +1378,7 @@
         plazosValidos: [6, 12, 18, 24, 36, 48]
       },
       muni: {
-        name: "Municipales Convenio VIKINGO / QUAD",
+        name: "Municipales QUAD",
         short: "Municipales",
         plazosValidos: [12, 24]
       },
@@ -1962,9 +1955,30 @@
       renderApp();
     }
 
+    /**
+     * PARSEO DECIMAL DEFENSIVO (SOPORTE DE COMA Y PUNTO)
+     */
+    function sanitizarNumeroInput(valorRaw) {
+      if (typeof valorRaw === 'number') return isNaN(valorRaw) ? 0 : valorRaw;
+      if (!valorRaw) return 0;
+      // Limpiar signos de pesos, espacios y separadores de miles
+      let limpio = String(valorRaw).trim().replace(/\$/g, '').replace(/\s/g, '');
+      // Si contiene puntos y comas, asumir que el punto es de miles y la coma es decimal
+      if (limpio.includes('.') && limpio.includes(',')) {
+        limpio = limpio.replace(/\./g, '').replace(',', '.');
+      } else if (limpio.includes(',')) {
+        // Si solo contiene comas, reemplazar por punto decimal
+        limpio = limpio.replace(',', '.');
+      } else if ((limpio.match(/\./g) || []).length > 1 || /^\d{1,3}\.\d{3}$/.test(limpio)) {
+        // Si contiene múltiples puntos o formato de miles estándar (ej: 100.000), el punto es separador de miles
+        limpio = limpio.replace(/\./g, '');
+      }
+      const resultado = parseFloat(limpio);
+      return isNaN(resultado) ? 0 : resultado;
+    }
+
     function handleAmountInput(val) {
-      const cleanVal = val.replace(/[^0-9]/g, '');
-      const num = cleanVal ? parseInt(cleanVal, 10) : 0;
+      const num = sanitizarNumeroInput(val);
       state.montoInputRaw = num;
 
       document.querySelectorAll('.chip-btn').forEach(btn => {
@@ -1996,7 +2010,11 @@
       const input = document.getElementById('amountInput');
       input.addEventListener('blur', () => {
         if (state.montoInputRaw > 0) {
-          input.value = integerFormatter.format(state.montoInputRaw);
+          if (Number.isInteger(state.montoInputRaw)) {
+            input.value = integerFormatter.format(state.montoInputRaw);
+          } else {
+            input.value = currencyFormatter.format(state.montoInputRaw).replace(/[^0-9,.-]/g, '').trim();
+          }
         }
       });
 
