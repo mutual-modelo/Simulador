@@ -56,9 +56,11 @@
       --neto-bg: #eff6ff;
       --neto-border: #3b82f6;
 
-      --total-color: #7c3aed;
-      --total-bg: #f5f3ff;
-      --total-border: #8b5cf6;
+      --total-color: #1e293b;
+      --total-bg: #f8fafc;
+      --total-border: #cbd5e1;
+      --total-badge-bg: #64748b;
+      --total-badge-color: #ffffff;
 
       --capital-color: #d97706;
       --capital-bg: #fffbeb;
@@ -625,13 +627,13 @@
     .card-neto .kpi-badge { background: #dbeafe; color: #1e40af; }
     .card-neto .kpi-value { color: var(--color-brand-blue); }
 
-    /* 📌 CARD 3: TOTAL AYUDA ECONÓMICA (Violeta) */
+    /* 📌 CARD 3: TOTAL AYUDA ECONÓMICA / TOTAL A PAGAR (Gris Neutro Sobrio) */
     .card-total {
       border-color: var(--total-border);
       background: linear-gradient(180deg, #ffffff 0%, var(--total-bg) 100%);
     }
-    .card-total .kpi-label { color: #6d28d9; }
-    .card-total .kpi-badge { background: #ede9fe; color: #5b21b6; }
+    .card-total .kpi-label { color: var(--text-muted); }
+    .card-total .kpi-badge { background: var(--total-badge-bg); color: var(--total-badge-color); }
     .card-total .kpi-value { color: var(--total-color); }
 
     /* 📌 CARD 4: CAPITAL (Ámbar) */
@@ -752,35 +754,54 @@
       background-image: radial-gradient(#d4cbbe 1px, transparent 1px);
       background-size: 14px 14px;
       padding: 0.875rem 1rem;
-      max-height: 260px;
-      overflow-y: auto;
       display: flex;
       flex-direction: column;
-      align-items: flex-end;
+      align-items: stretch;
     }
 
     .wa-bubble-msg {
       background-color: var(--wa-bubble);
       border-radius: 8px 8px 2px 8px;
-      padding: 0.75rem 0.875rem;
-      max-width: 98%;
-      font-size: 0.775rem;
-      color: #111827;
+      padding: 0.65rem 0.75rem;
+      width: 100%;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.14);
+      position: relative;
+    }
+
+    .whatsapp-editor-textarea {
+      width: 100%;
+      min-height: 200px;
+      max-height: 380px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      padding: 0.35rem 0.4rem;
+      font-family: inherit;
+      font-size: 0.8125rem;
+      line-height: 1.45;
+      color: #111827;
+      resize: vertical;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
       white-space: pre-wrap;
       word-break: break-word;
-      line-height: 1.45;
-      position: relative;
+    }
+
+    .whatsapp-editor-textarea:focus {
+      background-color: rgba(255, 255, 255, 0.6);
+      border-color: #25d366;
     }
 
     .wa-bubble-time {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 3px;
+      gap: 4px;
       font-size: 0.65rem;
       color: #667781;
-      margin-top: 0.375rem;
+      margin-top: 0.25rem;
+      padding-right: 0.25rem;
     }
 
     .wa-checks {
@@ -799,11 +820,54 @@
       gap: 0.5rem;
     }
 
+    .wa-phone-inline-box {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      padding: 0.3rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .wa-phone-inline-input {
+      border: none;
+      outline: none;
+      font-size: 0.75rem;
+      color: var(--text-main);
+      font-weight: 600;
+      width: 140px;
+      background: transparent;
+    }
+
     .wa-btn-group {
       display: flex;
       align-items: center;
       gap: 0.5rem;
       flex-wrap: wrap;
+    }
+
+    .btn-restore {
+      background: #ffffff;
+      color: #475569;
+      border: 1px solid var(--border-color);
+      padding: 0.45rem 0.875rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      transition: all 0.15s ease;
+    }
+
+    .btn-restore:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      color: #0f172a;
     }
 
     .btn-copy {
@@ -1130,20 +1194,20 @@
             <div class="kpi-value tabular-nums" id="kpiNetoVal">$ 0,00</div>
           </div>
 
-          <!-- 📌 CARD 3: TOTAL AYUDA ECONÓMICA -->
+          <!-- 📌 CARD 3: TOTAL AYUDA ECONÓMICA / TOTAL A PAGAR -->
           <div class="kpi-card card-total">
             <div class="kpi-card-header">
-              <span class="kpi-label">Total Ayuda Económica</span>
-              <span class="kpi-badge">Total</span>
+              <span class="kpi-label" id="kpiTotalLabel">TOTAL AYUDA ECONÓMICA</span>
+              <span class="kpi-badge" id="kpiTotalBadge">Total a Devolver</span>
             </div>
             <div class="kpi-value tabular-nums" id="kpiTotalVal">$ 0,00</div>
           </div>
 
-          <!-- 📌 CARD 4: CAPITAL -->
+          <!-- 📌 CARD 4: CAPITAL / IMPORTE SOLICITADO -->
           <div class="kpi-card card-capital">
             <div class="kpi-card-header">
-              <span class="kpi-label">Capital</span>
-              <span class="kpi-badge">Computable</span>
+              <span class="kpi-label" id="kpiCapitalLabel">CAPITAL</span>
+              <span class="kpi-badge" id="kpiCapitalBadge">Capital Computable</span>
             </div>
             <div class="kpi-value tabular-nums" id="kpiCapitalVal">$ 0,00</div>
           </div>
@@ -1179,7 +1243,7 @@
           </div>
         </div>
 
-        <!-- 📌 3. PREVISUALIZACIÓN Y ACCIONES DE WHATSAPP -->
+        <!-- 📌 3. EDITOR INTERACTIVO Y ACCIONES DE WHATSAPP -->
         <div class="wa-card">
           <div class="wa-header">
             <div class="wa-header-brand">
@@ -1187,15 +1251,16 @@
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12.031 2C6.495 2 2 6.495 2 12.031c0 1.968.563 3.864 1.63 5.498L2.016 22l4.636-1.594A9.976 9.976 0 0 0 12.031 22c5.536 0 10.031-4.495 10.031-10.031S17.567 2 12.031 2zm0 18.25c-1.745 0-3.447-.484-4.922-1.399l-.352-.218-2.756.947.957-2.697-.24-.378A8.204 8.204 0 0 1 3.781 12.03c0-4.549 3.701-8.25 8.25-8.25 4.549 0 8.25 3.701 8.25 8.25 0 4.549-3.701 8.25-8.25 8.25zm4.52-6.177c-.247-.124-1.464-.722-1.691-.805-.227-.082-.392-.124-.557.124-.165.247-.64 1.045-.784 1.21-.144.165-.288.185-.536.062-.247-.124-1.044-.385-1.988-1.227-.735-.655-1.232-1.465-1.376-1.712-.144-.247-.015-.381.108-.504.112-.111.247-.289.371-.433.124-.144.165-.247.247-.412.082-.165.041-.309-.021-.433-.062-.124-.557-1.34-.763-1.835-.201-.482-.405-.417-.557-.425l-.474-.008c-.165 0-.433.062-.66.309-.227.247-.866.846-.866 2.062 0 1.217.886 2.393 1.01 2.557.124.165 1.745 2.664 4.227 3.736.591.255 1.053.407 1.413.522.593.188 1.133.162 1.559.098.476-.071 1.464-.598 1.67-1.175.206-.577.206-1.072.144-1.175-.062-.103-.227-.165-.474-.289z"/>
               </svg>
-              <span>Previsualización del Mensaje Institucional de WhatsApp</span>
+              <span>Editor Interactivo de Plantilla de WhatsApp</span>
             </div>
-            <span style="font-size: 0.7rem; opacity: 0.9;">Texto en vivo</span>
+            <span style="font-size: 0.7rem; opacity: 0.9;">Edición y Envío en Vivo</span>
           </div>
 
           <div class="wa-chat-canvas">
             <div class="wa-bubble-msg">
-              <span id="waTextContent">Cargando previsualización...</span>
+              <textarea id="txt-plantilla-whatsapp" class="whatsapp-editor-textarea" rows="8" placeholder="Escriba o personalice aquí el mensaje..."></textarea>
               <div class="wa-bubble-time">
+                <span id="waCustomNotice" style="display: none; font-size: 0.65rem; color: #b45309; margin-right: auto; font-weight: 600;">✏️ Editado manualmente</span>
                 <span id="waTimeDisplay">10:45</span>
                 <span class="wa-checks">✓✓</span>
               </div>
@@ -1203,24 +1268,37 @@
           </div>
 
           <div class="wa-actions-bar">
-            <span style="font-size: 0.725rem; font-weight: 500; color: var(--text-muted);">
-              Plantilla oficial de Mutual Modelo con requisitos y meses de cobro configurados.
-            </span>
+            <!-- Sincronización rápida de teléfono de socio -->
+            <div class="wa-phone-inline-box" title="Teléfono del socio para envío de WhatsApp">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+              <span>Tel:</span>
+              <input type="tel" id="waPhoneInline" class="wa-phone-inline-input" placeholder="Ej: 5493434123456" />
+            </div>
 
             <div class="wa-btn-group">
-              <button type="button" class="btn-copy" onclick="copyWhatsAppText()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <button type="button" class="btn-restore" onclick="restoreOriginalTemplate()" title="Restablecer plantilla calculada original">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                  <path d="M3 3v5h5"/>
+                </svg>
+                🔄 Restaurar Plantilla Original
+              </button>
+
+              <button type="button" class="btn-copy" onclick="copyWhatsAppText()" title="Copiar texto del editor">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                   <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
                 </svg>
-                📋 Copiar Texto
+                📋 Copiar al Portapapeles
               </button>
 
-              <button type="button" class="btn-whatsapp-send" onclick="sendWhatsApp()">
+              <button type="button" class="btn-whatsapp-send" onclick="sendWhatsApp()" title="Enviar mensaje directamente por WhatsApp">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12.031 2C6.495 2 2 6.495 2 12.031c0 1.968.563 3.864 1.63 5.498L2.016 22l4.636-1.594A9.976 9.976 0 0 0 12.031 22c5.536 0 10.031-4.495 10.031-10.031S17.567 2 12.031 2zm0 18.25c-1.745 0-3.447-.484-4.922-1.399l-.352-.218-2.756.947.957-2.697-.24-.378A8.204 8.204 0 0 1 3.781 12.03c0-4.549 3.701-8.25 8.25-8.25 4.549 0 8.25 3.701 8.25 8.25 0 4.549-3.701 8.25-8.25 8.25zm4.52-6.177c-.247-.124-1.464-.722-1.691-.805-.227-.082-.392-.124-.557.124-.165.247-.64 1.045-.784 1.21-.144.165-.288.185-.536.062-.247-.124-1.044-.385-1.988-1.227-.735-.655-1.232-1.465-1.376-1.712-.144-.247-.015-.381.108-.504.112-.111.247-.289.371-.433.124-.144.165-.247.247-.412.082-.165.041-.309-.021-.433-.062-.124-.557-1.34-.763-1.835-.201-.482-.405-.417-.557-.425l-.474-.008c-.165 0-.433.062-.66.309-.227.247-.866.846-.866 2.062 0 1.217.886 2.393 1.01 2.557.124.165 1.745 2.664 4.227 3.736.591.255 1.053.407 1.413.522.593.188 1.133.162 1.559.098.476-.071 1.464-.598 1.67-1.175.206-.577.206-1.072.144-1.175-.062-.103-.227-.165-.474-.289z"/>
                 </svg>
-                📲 WhatsApp
+                📲 Enviar por WhatsApp
               </button>
             </div>
           </div>
@@ -1267,12 +1345,12 @@
         short: "FEDEM",
         plazosValidos: [6, 12, 18, 24, 36, 48],
         parametros: {
-          6: { coeficiente: 1.56999, gastos: 0.25, seguro: 0.005 },
-          12: { coeficiente: 1.83207, gastos: 0.25, seguro: 0.005 },
-          18: { coeficiente: 2.24242, gastos: 0.34, seguro: 0.005 },
-          24: { coeficiente: 2.67773, gastos: 0.34, seguro: 0.005 },
-          36: { coeficiente: 3.62048, gastos: 0.34, seguro: 0.005 },
-          48: { coeficiente: 4.63548, gastos: 0.34, seguro: 0.005 }
+          6: { coeficiente: 1.5699, gastos: 0.2500, seguro: 0.0050 },
+          12: { coeficiente: 1.8321, gastos: 0.2500, seguro: 0.0050 },
+          18: { coeficiente: 2.2424, gastos: 0.3400, seguro: 0.0050 },
+          24: { coeficiente: 2.6778, gastos: 0.3400, seguro: 0.0050 },
+          36: { coeficiente: 3.6205, gastos: 0.3400, seguro: 0.0050 },
+          48: { coeficiente: 4.6355, gastos: 0.3400, seguro: 0.0050 }
         }
       },
 
@@ -1280,10 +1358,10 @@
         name: "Municipales Convenio VIKINGO / QUAD",
         short: "Municipales",
         plazosValidos: [12, 24],
-        factorVikingo: 0.85,
+        factorVikingo: 0.8500,
         parametros: {
-          12: { coefCuota: 0.159701, coefTotal: 1.9164 },
-          24: { coefCuota: 0.112798, coefTotal: 2.7071 }
+          12: { coefCuota: 0.1597, coefTotal: 1.9164 },
+          24: { coefCuota: 0.1128, coefTotal: 2.7071 }
         }
       },
 
@@ -1292,17 +1370,12 @@
         short: "Sidecreer",
         plazosValidos: [6, 12, 18, 24, 36, 48],
         parametros: {
-          6: { coeficiente: 1.56999, gastos: 0.25 },
-          12: { 
-            coeficiente: 1.83207,
-            // Coeficiente exacto nativo de Google Sheets para que Cuota $10.000 en 12 meses dé exactamente Capital = $87.333,02
-            coefExactoCuota: 12 / (8.733302 * 0.75),
-            gastos: 0.25 
-          },
-          18: { coeficiente: 2.24242, gastos: 0.34 },
-          24: { coeficiente: 2.67773, gastos: 0.34 },
-          36: { coeficiente: 3.62048, gastos: 0.34 },
-          48: { coeficiente: 4.63548, gastos: 0.34 }
+          6: { coeficiente: 1.5700, gastos: 0.2500 },
+          12: { coeficiente: 1.8321, gastos: 0.2500 },
+          18: { coeficiente: 2.2424, gastos: 0.3400 },
+          24: { coeficiente: 2.6777, gastos: 0.3400 },
+          36: { coeficiente: 3.6205, gastos: 0.3400 },
+          48: { coeficiente: 4.6355, gastos: 0.3400 }
         }
       }
     };
@@ -1380,7 +1453,7 @@
           cuota = montoInput;
           neto = cuota / coefCuota;
         }
-        capital = neto / 0.85;
+        capital = neto / linea.factorVikingo;
         totalAyuda = cuota * plazo;
 
       } else if (lineaKey === 'sidecreer') {
@@ -1391,18 +1464,12 @@
           neto = montoInput;
           totalAyuda = neto * coef;
           cuota = totalAyuda / plazo;
-          capital = neto / (1 - gastos);
         } else {
-          // Por cuota objetivo:
           cuota = montoInput;
           totalAyuda = cuota * plazo;
-          if (plazo === 12 && pConfig.coefExactoCuota) {
-            neto = totalAyuda / pConfig.coefExactoCuota;
-          } else {
-            neto = totalAyuda / coef;
-          }
-          capital = neto / (1 - gastos);
+          neto = totalAyuda / coef;
         }
+        capital = neto / (1 - gastos);
       }
 
       return {
@@ -1461,7 +1528,25 @@
       const result = calculateSimulation(state.linea, state.plazo, state.modo, state.montoInputRaw);
       if (!result) return;
 
-      // Actualizar las 4 KPI Cards Limpias (Sin subtítulos ni comentarios inferiores)
+      // Actualizar etiquetas dinámicas de Card 3 y Card 4 según la línea seleccionada
+      const totalLabel = document.getElementById('kpiTotalLabel');
+      const totalBadge = document.getElementById('kpiTotalBadge');
+      const capitalLabel = document.getElementById('kpiCapitalLabel');
+      const capitalBadge = document.getElementById('kpiCapitalBadge');
+
+      if (state.linea === 'muni' || state.linea === 'sidecreer') {
+        totalLabel.textContent = "TOTAL A PAGAR";
+        totalBadge.textContent = "Total a Devolver";
+        capitalLabel.textContent = "IMPORTE SOLICITADO";
+        capitalBadge.textContent = "Monto Solicitado";
+      } else {
+        totalLabel.textContent = "TOTAL AYUDA ECONÓMICA";
+        totalBadge.textContent = "Total a Devolver";
+        capitalLabel.textContent = "CAPITAL";
+        capitalBadge.textContent = "Capital Computable";
+      }
+
+      // Actualizar los valores en las 4 KPI Cards
       // 1. Monto de la Cuota (con badge de cantidad de cuotas fijas)
       document.getElementById('kpiCuotaVal').textContent = formatMoney(result.cuota);
       document.getElementById('kpiCuotaBadge').textContent = result.plazo + " cuotas fijas";
@@ -1469,10 +1554,10 @@
       // 2. Monto a Entregar
       document.getElementById('kpiNetoVal').textContent = formatMoney(result.neto);
 
-      // 3. Total Ayuda Económica
+      // 3. Total Ayuda Económica / Total a Pagar
       document.getElementById('kpiTotalVal').textContent = formatMoney(result.totalAyuda);
 
-      // 4. Capital (en Sidecreer 12 cuotas de $10.000 da exactamente $87.333,02)
+      // 4. Capital / Importe Solicitado
       document.getElementById('kpiCapitalVal').textContent = formatMoney(result.capital);
 
       // Renderizar tabla de planes (3 columnas exactas)
@@ -1513,11 +1598,14 @@
     }
 
     /**
-     * MÓDULO WHATSAPP CON PLANTILLA INSTITUCIONAL MUTUAL MODELO
+     * MÓDULO WHATSAPP INTERACTIVO CON PLANTILLA INSTITUCIONAL MUTUAL MODELO
+     * Soporta edición manual, notas agregadas, restauración y copia/envío directo
      */
-    function updateWhatsAppPreview() {
+    let isWhatsAppCustomEdited = false;
+
+    function generateOfficialWhatsAppMessage() {
       const sim = calculateSimulation(state.linea, state.plazo, state.modo, state.montoInputRaw);
-      if (!sim) return;
+      if (!sim) return '';
 
       const lineaObj = FINANCIAL_DATA[state.linea];
       const rawName = document.getElementById('clientName').value.trim();
@@ -1555,8 +1643,7 @@
       planesLines = planesLines.trimEnd();
 
       // Plantilla Institucional Oficial requerida
-      const mensajeInstitucional = 
-nombreCliente + " a continuación le detallare los planes que tenemos para ofrecerle 🙌🏻\n\n" +
+      return nombreCliente + " a continuación le detallare los planes que tenemos para ofrecerle 🙌🏻\n\n" +
 "📢 TENEMOS LA TASA MÁS BAJA DE LA PROVINCIA❗\n\n" +
 planesLines + "\n\n" +
 "Si está interesado en acceder, podemos realizar la gestión de manera online, por favor envíe lo que se le solicita a continuación:\n\n" +
@@ -1569,8 +1656,16 @@ planesLines + "\n\n" +
 "✅Foto o archivo PDF de SERVICIO a su nombre o CERTIFICADO DE VECINDAD\n" +
 "✅Especifique su Estado Civil, en caso de ser Casado/a indique Nro. de Dni, Nombre y Apellido del/la conyugue\n\n" +
 "Le informo que el descuento de la cuota social (la cual es el 2 % del total de haberes) y de la ayuda económica se realiza directamente de su recibo de sueldo, siendo el primer pago a partir de " + mesPrimerPago + " con haberes de " + mesHaber + ". Ante cualquier duda o consulta estoy a disposición 🙌";
+    }
 
-      document.getElementById('waTextContent').textContent = mensajeInstitucional;
+    function updateWhatsAppPreview(force = false) {
+      const textarea = document.getElementById('txt-plantilla-whatsapp');
+      if (!textarea) return;
+
+      if (!isWhatsAppCustomEdited || force) {
+        textarea.value = generateOfficialWhatsAppMessage();
+        document.getElementById('waCustomNotice').style.display = 'none';
+      }
 
       const now = new Date();
       const hours = String(now.getHours()).padStart(2, '0');
@@ -1578,24 +1673,43 @@ planesLines + "\n\n" +
       document.getElementById('waTimeDisplay').textContent = hours + ":" + minutes;
     }
 
+    function restoreOriginalTemplate() {
+      isWhatsAppCustomEdited = false;
+      updateWhatsAppPreview(true);
+      showToast("🔄 Plantilla original restaurada con éxito.");
+    }
+
     function copyWhatsAppText() {
-      const text = document.getElementById('waTextContent').textContent;
-      navigator.clipboard.writeText(text).then(() => {
-        showToast("📋 ¡Mensaje copiado al portapapeles con éxito!");
-      }).catch(() => {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        document.body.appendChild(textarea);
+      const textarea = document.getElementById('txt-plantilla-whatsapp');
+      const text = textarea ? textarea.value : '';
+      if (!text) return;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast("¡Copiado con éxito!");
+        }).catch(() => {
+          fallbackCopyText(text);
+        });
+      } else {
+        fallbackCopyText(text);
+      }
+    }
+
+    function fallbackCopyText(text) {
+      const textarea = document.getElementById('txt-plantilla-whatsapp');
+      if (textarea) {
         textarea.select();
         document.execCommand('copy');
-        document.body.removeChild(textarea);
-        showToast("📋 ¡Mensaje copiado al portapapeles!");
-      });
+        showToast("¡Copiado con éxito!");
+      }
     }
 
     function sendWhatsApp() {
-      const text = document.getElementById('waTextContent').textContent;
-      let phone = document.getElementById('clientPhone').value.replace(/[^0-9]/g, '');
+      const textarea = document.getElementById('txt-plantilla-whatsapp');
+      const text = textarea ? textarea.value : '';
+
+      const phoneInput = (document.getElementById('waPhoneInline').value || document.getElementById('clientPhone').value).trim();
+      let phone = phoneInput.replace(/[^0-9]/g, '');
 
       let url = '';
       if (phone) {
@@ -1692,9 +1806,12 @@ planesLines + "\n\n" +
       state.plazo = 12;
       document.getElementById('amountInput').value = '100.000';
       document.getElementById('clientPhone').value = '';
+      document.getElementById('waPhoneInline').value = '';
       document.getElementById('clientName').value = '';
+      isWhatsAppCustomEdited = false;
       initDefaultMonths();
       renderApp();
+      updateWhatsAppPreview(true);
       showToast("Valores restablecidos a predeterminados.");
     }
 
@@ -1704,6 +1821,24 @@ planesLines + "\n\n" +
         if (state.montoInputRaw > 0) {
           input.value = integerFormatter.format(state.montoInputRaw);
         }
+      });
+
+      // Sincronización bidireccional entre teléfono de panel y teléfono de WhatsApp
+      const clientPhoneEl = document.getElementById('clientPhone');
+      const waPhoneInlineEl = document.getElementById('waPhoneInline');
+      
+      clientPhoneEl.addEventListener('input', (e) => {
+        waPhoneInlineEl.value = e.target.value;
+      });
+      waPhoneInlineEl.addEventListener('input', (e) => {
+        clientPhoneEl.value = e.target.value;
+      });
+
+      // Detección de edición manual en el textarea de WhatsApp
+      const waTextarea = document.getElementById('txt-plantilla-whatsapp');
+      waTextarea.addEventListener('input', () => {
+        isWhatsAppCustomEdited = true;
+        document.getElementById('waCustomNotice').style.display = 'inline';
       });
 
       initDefaultMonths();
